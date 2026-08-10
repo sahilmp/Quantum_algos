@@ -92,9 +92,7 @@ I'd rather the README say this plainly than have someone assume otherwise from t
 # Python 3.9–3.10 recommended (Qiskit's older Aer API used here doesn't play well with 3.11+)
 python -m venv venv && source venv/bin/activate
 
-pip install qiskit "qiskit-aer<0.13" ipywidgets \
-            cryptography pycryptodome \
-            numpy pandas scikit-learn matplotlib jupyter
+pip install -r requirements.txt
 ```
 
 **Notes:**
@@ -104,13 +102,15 @@ pip install qiskit "qiskit-aer<0.13" ipywidgets \
 
 ---
 
-## What this demonstrates
+## Scope and approach
 
-- Comfort moving between **the theory NIST standardizes** (lattice problems, hash-based signatures, KEMs) and **the code that implements it**, rather than only knowing algorithm names.
-- An understanding that PQC migration isn't a single algorithm swap — it spans **encryption (KEMs), signatures, and hashing**, each with different security assumptions and NIST-selected candidates (ML-KEM, ML-DSA, SLH-DSA, FALCON).
-- Practical exposure to **QKD as an alternative key-agreement mechanism**, distinct from PQC's "use a different hard problem" approach.
-- A working, if simplified, mental model of **why** Shor's algorithm forces this migration — through an actual break, not just the claim.
-- Willingness to **benchmark and test** (the hybrid-encryption notebook's `unittest` suite and runtime-scaling plots), and to be transparent about where an implementation is a simplification, a proxy, or incomplete — which matters more in cryptography than in most other software.
+A few notes on how this repo is put together, for anyone trying to get oriented quickly:
+
+- **Theory and implementation are kept close together.** Rather than calling a PQC library as a black box, most notebooks build the underlying construction (LWE encryption, Haraka hashing) from the math, or build directly on a reference implementation (FALCON) rather than a wrapper library — so the notebooks double as a walk-through of *how* the algorithm works, not just *that* it works.
+- **PQC migration is treated as more than one problem.** Encryption/KEMs, signatures, and hashing each rely on different hard problems and have separate NIST-selected candidates (ML-KEM, ML-DSA, SLH-DSA, FALCON), so they're covered as separate notebooks rather than folded into one generic "post-quantum" example.
+- **QKD is included as a distinct approach**, not a variant of PQC — it solves key agreement via physics (detectable eavesdropping) rather than a computationally hard problem, and the two are easy to conflate if you haven't worked through both.
+- **The Shor's-algorithm notebook exists to make the threat concrete**, not just cited — an actual (small, simulated) RSA break, rather than a description of one.
+- **The hybrid-encryption notebook includes tests and benchmarking** (`unittest`, including adversarial/negative cases, plus runtime-vs-dataset-size plots), which the others don't — it's the most "complete" piece here in that sense, and the others lean more exploratory.
 
 ---
 
